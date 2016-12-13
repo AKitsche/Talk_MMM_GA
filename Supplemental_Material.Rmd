@@ -1,0 +1,48 @@
+---
+title: "The evaluation of genetic association studies"
+subtitle: "Supplemental Material"
+author: "Andreas Kitsche (andreas.kitsche@kws.com)"
+date: "December 14th, 2016"
+output:
+  ioslides_presentation:
+    incremental: no
+  beamer_presentation:
+    incremental: no
+    toc: true
+  revealjs::revealjs_presentation:
+    highlight: haddock
+    reveal_options:
+      previewLinks: yes
+      slideNumber: yes
+    self_contained: yes
+    theme: simple
+    transition: slide
+  slidy_presentation:
+    incremental: no
+bibliography: ReferencesGWA.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, error=FALSE, message = FALSE)
+```
+
+# Supplemental material
+
+## Hypotheses Testing
+
+Focus is on the simultaneous evaluation of the three hypotheses $H_0^{(1)}, H_0^{(2)}, H_0^{(3)}$
+
+Use Wald-type test statistics $T^{(j)}=\left(\hat{\beta}^{(j)}-\beta^{(j)}_{0}\right)/\widehat{\text{se}}(\hat{\beta}^{(j)})$, where $\widehat{\text{se}}(\hat{\beta}^{(j)})$ is the estimated standard error obtained for model $j$
+
+## Hypotheses Testing
+
+Under the null hypothesis the vector of test statistics $(T^{(1)},T^{(2)},T^{(3)})$ asymptotically follows a three-dimensional mean-zero normal distribution with correlation matrix $\widehat{\mathbf{\Sigma}}$ that is obtained by selecting the appropriate sub-matrix of $\widehat{\mathbf{\Sigma}}^{(123)}$ (choosing entries corresponding to the independent variables $x^{(1)}, x^{(2)}, x^{(3)}$) and then converting it to a correlation matrix.
+
+
+## Hypotheses Testing
+
+Te global null hypothesis $H_{0}: H_{0}^{(1)} \cap H_{0}^{(2)} \cap H_{0}^{(3)}$ is rejected, if $|T^{(j)}| \geq z_{1-\alpha/2}$ for at least one $j=1,2,3$. 
+
+The critical point $z_{1-\alpha/2}$ is the $1-\alpha/2$ level equi-coordinate percentage point of the three-dimensional normal distribution with mean zero and correlation matrix $\widehat{\mathbf{\Sigma}}$, i.e. $N \left(\textbf{0},\widehat{\mathbf{\Sigma}} \right)$. 
+
+The associated two-tailed multiplicity-adjusted p-values can be calculated as  $p^{(j)}=1-\Phi\left(|T^{(j)}|, 0, \widehat{\mathbf{\Sigma}} \right)$, where $\Phi$ is the cumulative density function of the multivariate normal distribution.
