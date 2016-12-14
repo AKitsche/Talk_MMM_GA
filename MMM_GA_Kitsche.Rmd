@@ -1,14 +1,14 @@
 ---
 title: "The evaluation of genetic association studies"
-subtitle: "using the Multiple Marginal Models approach"
 author: "Andreas Kitsche (andreas.kitsche@kws.com)"
 date: "December 14th, 2016"
 output:
   ioslides_presentation:
     incremental: no
+    slideNumber: yes
   beamer_presentation:
     incremental: no
-    toc: true
+    toc: yes
   revealjs::revealjs_presentation:
     highlight: haddock
     reveal_options:
@@ -19,6 +19,7 @@ output:
     transition: slide
   slidy_presentation:
     incremental: no
+subtitle: using the Multiple Marginal Models approach
 bibliography: ReferencesGWA.bib
 ---
 
@@ -37,7 +38,7 @@ bib <- read.bibtex("ReferencesGWA.bib")
 
 Goal: detect the association of genetic variants with a particular trait of interest, e.g. disease or quantitative trait
 
-![](Dendrogramm_subset.jpg)
+![](Introduction.png)
 
 ## Analysis strategies
 
@@ -54,7 +55,7 @@ Several statistical analysis strategies proposed [@Balding2006]:
 
 ## The genetic mode on inheritance
 
-Commonly thee genetic modes of inheritance are considered [@Freidlin2002]:
+Commonly three genetic modes of inheritance are considered [@Freidlin2002]:
 
 * dominant model - assumes that either one or two copies of the minor allele are sufficient to produce an (equal) effect on the trait
 * additive model -  assumes that the trait effect is linearly related to the number of minor alleles
@@ -67,7 +68,7 @@ In reality the mode of inheritance is rarely known **a-priori** in genetic assoc
 ## Methods
 
 *  consider an autosomal diallelic marker (e.g., SNP) with alleles $A$ and $a$.
-*  genotypes ($AA$, $Aa$ and $Aa$) are represented by numeric variable $x_{i}$, with $i = 1,\ldots,n$ independent subjects
+*  genotypes ($AA$, $Aa$ and $aa$) are represented by a quantitative explanatory variable $x_{i}$, with $i = 1,\ldots,n$ independent subjects
 *  $x_{i}$ corresponds to the number of copies of the allele $a$, i.e., if subject $i$ has zero copies of the allele $a$ then $x_{i}=0$, and so on
 *  consider the generalized linear model [@Nelder1972]:
 $$ E(y_{i})=g^{-1}\left(x_{i} \beta + \mathbf{x}_{Ni}'\mathbf{\beta}_N\right) $$ , with e.g. logit link, identity link, or proportional hazards model
@@ -101,7 +102,7 @@ The Bogalusa Heart Study dataset [@Smith2010]:
 *  525 unrelated individuals of European descent at 545,821 SNPs. 
 *  12 clinically relevant phenotypes were measured
 *  considering phenotype total cholesterol (measured in milligrams (mg) of cholesterol per deciliter (dl) of blood ) for illustrative purposes
-*  SNP rs7738656 in the gene **C6orf170/GJA1**
+*  SNP rs7738656 in the gene __C6orf170/GJA1__
 
 
 ## Bogalusa Heart Study
@@ -115,6 +116,7 @@ library(GAdata)
 library(knitr)
 library(plotly)
 library(tidyr)
+library(xtable)
 data(chol)
 #graphical display via boxplots
 #boxplot(tc ~ genotype, data=chol)
@@ -125,7 +127,8 @@ p <- p +
   labs(title = "Distribution of total cholesterol values for each genotype",
        y = "total cholesterol (mg/dl)",
        x = "Genotype")
-ggplotly(p)
+#ggplotly(p)
+p
 ```
 
 ## Three genetic models
@@ -154,14 +157,15 @@ data_chol %>%
     labs(title = "Distribution of total cholesterol values for different modes of inheritance",
        y = "total cholesterol (mg/dl)",
        x = "Genotype") -> p
-ggplotly(p)
-
+#ggplotly(p)
+p
 
 ```
 
 
-## Results
-```{r}
+## Results - Quantitative trait
+```{r, results="asis"}
+library(xtable)
 #calculating the allele frequencies
 #table(chol$genotype)#A is the minor allele
 #Approach using three different genetic models
@@ -170,74 +174,59 @@ mrec <- lm(tc ~ rec, data=chol) #lin reg rec
 mdom <- lm(tc ~ dom, data=chol) #lin reg dom
 #simultaneous assessment of multiple marginal models
 g <- glht(mmm(m1=madd, m2=mrec, m3=mdom), mlf(m1="add=0", m2="rec=0",m3="dom=0"))
-kable(tidy(summary(g)))
+kable(tidy(summary(g)), 
+      caption = "Results from the association analysis of the quantitative trait of total cholesterol with the SNP rs7738656.", digits = c(1,1,2,2,2,7))
 ```
 
-## Case control study
 
-Genome-wide association study (GWAS) on severe falciparum malaria for
-association with SNP rs10900589 of the ATPase, Ca ++ transporting, plasma membrane 4 ( ATP2B4 ) gene [@Timmann2012, @Loley2013]. The data of the SNP rs10900589 for the Ghanaian group:
+Conclusion: SNP rs7738656 is associated with the amount of total cholesterol with an effect of 52.65 mg/dl of the homozygous recessive genotype.
 
+## Case-Control study
+
+Genome-wide association study (GWAS) on severe falciparum malaria:
+
+* association with SNP rs10900589 in the ATPase, Ca ++ transporting, plasma membrane 4 (_ATP2B4_) gene [@Timmann2012, @Loley2013] 
+* data of the SNP rs10900589 for the Gambian population (N = 2209):
 
 Genotypes|TT|GT|GG
 ------------- | -------------| -------------| -------------
-Cases|575|614|131  
-Controls|326|362|139
+Cases|472|377|59 
+Controls|672|507|122
+
+## Results - Case-Control study
 
 $$\text{logit}(y_{i})= \beta_{0} + \beta_{1}x^{(j)}_{i}, \hspace{0.5cm} j = 1,2,3\\$$
-
-## Results
-
-$$\text{logit}(y_{i})= \beta_{0} + \beta_{1}x^{(j)}_{i}, \hspace{0.5cm} j = 1,2,3$$
-with $\text{logit}(y_{i})=\text{log}(P(y_{i}=1)/(1-P(y_{i}=1))$, where $P(y_{i}=1)$ is the probability that a randomly selected individual is diseased.
-
+with $$\text{logit}(y_{i})=\text{log}(P(y_{i}=1)/(1-P(y_{i}=1))$$, where $P(y_{i}=1)$ is the probability that a randomly selected individual is diseased. 
 ```{r, fig.height=15, fig.width=15}
-data(GhanaianCom)
-#table(GhanaianCom$y,GhanaianCom$Genotype)
-#graphical display
-#mosaicplot(with(GhanaianCom, table(y, Genotype)),main="")
-#calculating minor allele frequency
-#sum(GhanaianCom[,3],2 * GhanaianCom[,4])/(2 * nrow(GhanaianCom))
-#in this case “G” is the minor allele
-GhanaianCom$Genotype <- factor(GhanaianCom$Genotype,levels=c("TT","GT","GG"))
-GhanaianCom$GenNum <- as.numeric(GhanaianCom$Genotype)
+data(Gambian)
+Gambian$Genotype <- factor(Gambian$Genotype, levels=c("TT","GT","GG"))
+Gambian$GenNum <- as.numeric(Gambian$Genotype)
+
 #pseudo numeric variables for different modes of inheritance
-GhanaianCom$Add <- c(0, 0.5, 1)[GhanaianCom$GenNum]
-GhanaianCom$Dom <- c(0, 1, 1)[GhanaianCom$GenNum]
-GhanaianCom$Rec <- c(0, 0, 1)[GhanaianCom$GenNum]
+Gambian$Add <- c(0, 0.5, 1)[Gambian$GenNum]
+Gambian$Dom <- c(0, 1, 1)[Gambian$GenNum]
+Gambian$Rec <- c(0, 0, 1)[Gambian$GenNum]
 #Approach using three different genetic models
-GLMdom <- glm(y ~ Dom ,family=binomial, data=GhanaianCom)
-GLMadd <- glm(y ~ Add ,family=binomial, data=GhanaianCom)
-GLMrec <- glm(y ~ Rec ,family=binomial, data=GhanaianCom)
+GLMdom <- glm(y ~ Dom ,family=binomial, data=Gambian)
+GLMadd <- glm(y ~ Add ,family=binomial, data=Gambian)
+GLMrec <- glm(y ~ Rec ,family=binomial, data=Gambian)
+
 #simultaneous assessment of multiple marginal models
 g <- glht(mmm(m1=GLMdom, m2=GLMadd, m3=GLMrec), mlf(m1="Dom=0",m2="Add=0", m3="Rec=0"))
-kable(tidy(summary(g)))
+kable(tidy(summary(g)), digits = c(1,1,2,2,2,5))
 ```
-
-## Count Phenotype
-
-```{r}
-data(Depression)
-Depression <- Depression[Depression$Gender=="males",]
-#generating numerical dummy variables
-Depression$numgeno <- as.numeric(Depression$Genotyp)
-#Approach using three different genetic models
-Depression$add <- c(0, 0.5, 1)[Depression$numgeno]
-Depression$rec <- c(0, 0, 1)[Depression$numgeno]
-Depression$dom <- c(0, 1, 1)[Depression$numgeno]
-#Fitting the three Poisson regression models
-GLMdomDS <- glm(D ~ dom ,family=poisson, data=Depression)
-GLMaddDS <- glm(D ~ add ,family=poisson, data=Depression)
-GLMrecDS <- glm(D ~ rec ,family=poisson, data=Depression)
-#simultaneous assessment of multiple marginal models
-g <- glht( mmm(m1=GLMdomDS, m2=GLMaddDS, m3=GLMrecDS),mlf(m1="dom=0", m2="add=0", m3="rec=0"))
-kable(tidy(summary(g)))#multiplicity adjusted p-values
-```
-
 
 ## Survival Endpoint
 
-```{r}
+Experiment on susceptibility to \textit{Listeria monocytogenes} infection in mouse were considered [@Boyartchuk2001]:
+
+* susceptibility of mice to _Listeria monocytogenes_ infection was defined as the number of hours elapsed between injection and death of the animal
+* Mice surviving after 264 hours were considered recovered from the disease
+* A total number of 120 individuals was typed at 133 markers; we consider _D13Mit147_ within here
+
+## Kaplan-Meier curves for _D13Mit147_
+
+```{r, fig.height=5.5, fig.width=8}
 library(survminer)
 data(listerD13Mit147)
 #Kaplan-Meier plot
@@ -257,7 +246,12 @@ ggsurvplot(kapmei,  size = 1,  # change line size
 ```
 
 
-## Survival endpoint
+## Results - Survival endpoint
+
+Consider three Cox proportional hazard models:
+
+$$\lambda_{i}(t)=\lambda_{0}(t)e^{x^{(j)}_{i}\beta}, \hspace{0.5cm} j = 1,2,3$$
+where the exponentiated coefficients $\text{exp}(\beta)$ represent the multiplicative change in risk due to the variable $x^{(j)}_{i}$ under consideration
 
 ```{r}
 listerD13Mit147$numgeno <- as.numeric(listerD13Mit147$geno)
@@ -272,10 +266,39 @@ mdom <- coxph(Surv(pheno, cens) ~ dom, data=listerD13Mit147) #lin reg dom
 #simultaneous assessment of multiple marginal models
 g <- glht(mmm(m1=madd, m2=mrec, m3=mdom), mlf(m1="add=0", m2="rec=0",
 m3="dom=0"))
-kable(tidy(summary(g)))
+kable(tidy(summary(g)), digits = c(1,1,2,2,2,7))
 ```
 
+
+
 ## Overdominant Mode of Inheritance
+
+Several other modes of inheritance were published in the scientific literature, see e.g., [@Swanson-Wagner2006], i.e. overdominant genetic model [@Li2009]:
+
+genetic model  | independent variable | AA | Aa | aa
+------------- | -------------|---|---|---
+dominant  | $x^{(1)}$ |0|1|1
+additive  | $x^{(2)}$ |0|0.5|1
+recessive | $x^{(3)}$ |0|0|1
+overdominant|$x^{(4)}$|0|1|0
+
+This mode of inheritance models an advantage of the heterozygous genotype over the homozygous genotypes.
+
+## Overdominant Mode of Inheritance
+
+Case-Control study of breast cancer [@Hunter2007]
+
+* genotyping 528,173 SNPs in 1,145 postmenopausal women of European ancestry with invasive breast cancer and 1,142 controls
+* consider the SNP rs7696175
+
+Genotypes|AA|Aa|aa
+------------- | -------------| -------------| -------------
+Cases|187| 605| 353
+Controls|249| 496| 396
+
+## Results - Overdominant Mode of Inheritance
+
+$$\text{logit}(y_{i})= \beta_{0} + \beta_{1}x^{(j)}_{i}, \hspace{0.5cm} j = 1,2,3,4$$
 
 ```{r}
 data(rs7696175)
@@ -294,11 +317,35 @@ GLMover <- glm(y ~ OverDom ,family=binomial, data=rs7696175)
 MultTest <- glht(mmm(m1=GLMdom, m2=GLMadd, m3=GLMrec, m4=GLMover),
                  mlf(m1="Dom=0", m2="Add=0", m3="Rec=0", m4="OverDom=0"))
 ResultMMM <-summary(MultTest)
-kable(tidy(ResultMMM))
+kable(tidy(ResultMMM), digits = c(1,1,2,2,2,7))
 ```
 
-
 ## Interaction of Two Loci
+
+Detection of epistatic effects:  the phenomenon of the effect of one gene (locus) being dependent on the presence of one or more modifier genes
+
+study from the data set _srdta_ within the `GenABEL.data`  package [@GenABEL2013]
+
+* results on a small region of about 2.5 Mb
+* 833 SNPs are typed on 2500 people
+* variables sex, age, two quantitative and one binary traits are available for analysis
+* we focus on one quantitative trait (namely \texttt{qt1} in the package) the two SNPs rs10 and rs6585 and the covariates sex and age
+
+## Interaction of Two Loci - The Model {.smaller}
+
+$$y_{i}= \beta_{0} + \beta_{1}sex_{i} + \beta_{2}age_{i} + \beta_{3}x^{(j)}_{rs10 i} + \beta_{4}x^{(k)}_{rs6585 i} + \beta_{5}x^{(j)}_{rs10 i}\cdot x^{(k)}_{rs6585 i}, \hspace{0.5cm} j,k = 1,2,3$$
+
+*  where $x^{(j)}_{rs10 i}$ is the appropriate coding for the genotype at locus rs10 for subject $i$ assuming model $j$
+*  $x^{(k)}_{rs6585 i}$ is coding for the genotype at locus rs6585, assuming model $k$
+*  the parameter $\beta_{3}$ is the slope for the rs10 locus
+*  $\beta_{4}$ is the slope specific to the rs6585 locus
+*  $\beta_{5}$ is the interaction effect between locus rs10 and rs6585 for the $j \times k$ model. 
+
+Our goal is now to make simultaneous inference on the parameter of the interaction effect $\beta_{5}$ for all $j \times k$ combinations of genetic models.
+
+
+## Results - Interaction of Two Loci {.smaller}
+
 
 ```{r}
 library(GenABEL)
@@ -341,20 +388,46 @@ m4=GLM_Add_SNP1_Dom_SNP2, m5=GLM_Dom_SNP1_Dom_SNP2,
 m6=GLM_Rec_SNP1_Dom_SNP2, m7=GLM_Add_SNP1_Rec_SNP2,
 m8=GLM_Dom_SNP1_Rec_SNP2, m9=GLM_Rec_SNP1_Rec_SNP2),
 mlf(K_Interaction))
-kable(tidy(summary(Interaction_test)))
+results_interaction <- tidy(summary(Interaction_test))
+results_interaction$lhs <- c(
+	"Additive x Additive",
+  "Dominant x Additive",
+  "Recessive x Additive",
+  "Additive x Dominant",
+  "Dominant x Dominant",
+  "Recessive x Dominant",
+  "Additive x Recessive", 
+  "Dominant x Recessive",
+  "Recessive x Recessive"
+)
+kable(results_interaction, digits = c(1,1,2,2,2,7))
 ```
 
 
 
-## Conclusions
+## Conclusions {.smaller}
 
-* The proposed approach covers a wide variety of endpoints (binary, count, quantitative, and time-to-event data)
-* Multiple endpoints of different types can be assessed symultaneously (analysis of pleiotropic effects)
-* multiple loci can be assessed simultaneously while taking different modes of inheritance into account
+Summary:
+
+* Multiple marginal models reflect different modes of inheritence
+* Approach covers a wide variety of endpoints (binary, count, quantitative, and time-to-event data)
+* Multiple endpoints of different types can be assessed simultaneously (analysis of pleiotropic effects)
+* Multiple loci can be assessed simultaneously while taking different modes of inheritance into account (analysis of epistatic effects)
+* General model formualtion allows the inclusion of additional covariates, e.g. population stratification
+* Simultaneous confidence intervals for estimated parameters are available too (not presented)
+
+Limitations:
+
+* Applicable to a preselected subset of SNPs on GWAS
+* Useful for candidate gene or candidate polymorphism studies
+
+Extensions:
+
+* Extensions to a mixed-model framework will allow the incorporation of multiple independent studies to perform a meta-analysis
 
 ## Software
 
-The functionality for the simultaneous inference for multiple marginal models is implemented in the add-on package `r library(multcomp)` [@Hothorn2008}]for the open source software R [@RCoreTeam2013].
+The functionality for the simultaneous inference for multiple marginal models is implemented in the R add-on package `library(multcomp)` [@Hothorn2008]
 
 All data sets available at:
 
@@ -365,9 +438,8 @@ install_github("AKitsche/GAdata")
 library(GAdata)
 ```
 
-`.Rmd` files of the talk at https://github.com/AKitsche
+`.html` and `.Rmd` files for the slides at https://github.com/AKitsche/Talk_MMM_GA
 
-# References
 
 <style>
 slides > slide { overflow: scroll; }
