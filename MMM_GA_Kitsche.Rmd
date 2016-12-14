@@ -40,7 +40,7 @@ Goal: detect the association of genetic variants with a particular trait of inte
 
 ![](Introduction.png)
 
-## Analysis strategies
+## Analysis strategies {.smaller}
 
 Several statistical analysis strategies proposed [@Balding2006]:
 
@@ -53,7 +53,7 @@ Several statistical analysis strategies proposed [@Balding2006]:
 * count phenotypes - Poisson regression approach [@Qu2014]
 * survival outcomes - tests based on the Cox proportional hazards model [@Mendolia2014]
 
-## The genetic mode on inheritance
+## The genetic mode on inheritance {.smaller}
 
 Commonly three genetic modes of inheritance are considered [@Freidlin2002]:
 
@@ -62,6 +62,12 @@ Commonly three genetic modes of inheritance are considered [@Freidlin2002]:
 * recessive model - assumes that the trait effect is related to the presence of both minor alleles
 
 In reality the mode of inheritance is rarely known **a-priori** in genetic association studies.
+
+model-dependent methods: most powerful if the genetic model is specified correctly
+
+model-free techniques: robust, but they are not as powerful 
+
+Combinations exists: unconditional maximum test [@Freidlin2002], [@Hothorn2009], [@Loley2013]
 
 # Methods
 
@@ -329,7 +335,7 @@ study from the data set _srdta_ within the `GenABEL.data`  package [@GenABEL2013
 * results on a small region of about 2.5 Mb
 * 833 SNPs are typed on 2500 people
 * variables sex, age, two quantitative and one binary traits are available for analysis
-* we focus on one quantitative trait (namely \texttt{qt1} in the package) the two SNPs rs10 and rs6585 and the covariates sex and age
+* we focus on one quantitative trait (namely _qt1_ in the package) the two SNPs rs10 and rs6585 and the covariates sex and age
 
 ## Interaction of Two Loci - The Model {.smaller}
 
@@ -421,9 +427,6 @@ Limitations:
 * Applicable to a preselected subset of SNPs on GWAS
 * Useful for candidate gene or candidate polymorphism studies
 
-Extensions:
-
-* Extensions to a mixed-model framework will allow the incorporation of multiple independent studies to perform a meta-analysis
 
 ## Software
 
